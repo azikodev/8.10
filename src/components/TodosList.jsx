@@ -1,16 +1,7 @@
-import toast from "react-hot-toast";
-import { db } from "../firebase/firebaseConfig";
-import { doc, deleteDoc } from "firebase/firestore";
+import { useFirestore } from "../hooks/useFirestore";
 function TodosList({ data }) {
-  const deleteTodo = (id) => {
-    deleteDoc(doc(db, "todos", id))
-      .then(() => {
-        toast.success("Document successfully deleted!");
-      })
-      .catch((error) => {
-        toast.error(error.message);
-      });
-  };
+  const { deleteTodo } = useFirestore();
+
   return (
     <>
       <h1 className="mb-8">TodosList</h1>
@@ -18,7 +9,10 @@ function TodosList({ data }) {
         {data &&
           data.map((todo) => {
             return (
-              <div key={todo.id} className="card bg-base-100 w-96 shadow-xl border-2 flex items-center max-w-[250px] px-[24px] py-[8px]">
+              <div
+                key={todo.id}
+                className="card bg-base-100 w-96 shadow-xl border-2 flex items-center max-w-[250px] px-[24px] py-[8px]"
+              >
                 <h3>{todo.title}</h3>
                 <button
                   onClick={() => deleteTodo(todo.id)}

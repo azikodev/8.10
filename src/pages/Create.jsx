@@ -1,24 +1,17 @@
 //rrd imports
-import { Form, useActionData, useNavigate } from "react-router-dom";
+import { Form, useActionData } from "react-router-dom";
 
 //redux
 import { useSelector } from "react-redux";
 
 //custom hooks
-import { useCollection } from "../hooks/useCollection";
+import { useFirestore } from "../hooks/useFirestore";
 
 //components
-import { FormCheckbox, FormInput, TodosList } from "../components";
+import { FormCheckbox, FormInput } from "../components";
 
 //hook
 import { useEffect } from "react";
-
-//react hot toast
-import toast from "react-hot-toast";
-
-//firebase
-import { db } from "../firebase/firebaseConfig";
-import { collection, addDoc, serverTimestamp } from "firebase/firestore";
 
 //action
 export const action = async ({ request }) => {
@@ -31,7 +24,8 @@ export const action = async ({ request }) => {
 function Create() {
   const userData = useActionData();
   const { user } = useSelector((state) => state.user);
-  const navigate = useNavigate();
+
+  const { addTodo } = useFirestore();
 
   useEffect(() => {
     if (userData) {
@@ -39,16 +33,10 @@ function Create() {
         title: userData.title,
         completed: userData.completed,
         uid: user.uid,
-        createdAt: serverTimestamp(),
       };
-      addDoc(collection(db, "todos"), newTodo)
-        .then(() => {
-          toast.success("New Todo Added");
-          navigate("/"); // Navigate to home page
-        })
-        .catch((error) => toast.error(error.message));
+      addTodo(newTodo);
     }
-  }, [userData, navigate]);
+  }, [userData]);
 
   return (
     <div className="grid grid-cols-2">
